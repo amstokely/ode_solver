@@ -1,7 +1,9 @@
+import pickle
+
 import numpy as np
 from matplotlib import pyplot as plt
-import euler
-import parameters
+from euler import euler
+from euler import LorenzParameters
 
 
 def plot_lorenz(
@@ -9,7 +11,6 @@ def plot_lorenz(
     X: np.ndarray,
     Y: np.ndarray,
     Z: np.ndarray,
-    T: np.ndarray,
 ) -> None:
     # Plotting the solution in 3D space
     fig = plt.figure()
@@ -24,21 +25,16 @@ def plot_lorenz(
 
 
 if __name__ == "__main__":
-    t: int = int(400 / 0.01)
-    params = parameters.LorenzParameters(
+    n: int = int(400 / 0.01)
+    params = LorenzParameters(
         x0=0.0,
         y0=1.0,
         z0=1.05,
         dt=0.01,
-        t=400.0,
         sigma=10.0,
         rho=28.0,
         beta=8.0 / 3.0,
-        X=np.zeros(t),
-        Y=np.zeros(t),
-        Z=np.zeros(t),
-        T=np.zeros(t),
+        n=n,
     )
-
-    euler.euler(**params)
-    plot_lorenz(X=params.X, Y=params.Y, Z=params.Z, T=params.T)
+    X, Y, Z, T = euler(**params)
+    plot_lorenz(X=X, Y=Y, Z=Z)

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import numpy as np
 
 
 @dataclass
@@ -8,14 +7,10 @@ class LorenzParameters(object):
     y0: float
     z0: float
     dt: float
-    t: float
     sigma: float
     rho: float
     beta: float
-    X: np.ndarray
-    Y: np.ndarray
-    Z: np.ndarray
-    T: np.ndarray
+    n: int
 
     def keys(self):
         return self.__dict__.keys()
@@ -35,3 +30,9 @@ class LorenzParameters(object):
     def __iter__(self):
         for key in self.keys():
             yield key
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    def __getstate__(self):
+        return self.__dict__
