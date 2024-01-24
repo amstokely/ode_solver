@@ -89,7 +89,7 @@ contains
     function f(t, s)
 
         use parameters, only : dt, n, sigma, rho, beta
-        use euler, only : euler_step
+        use rk, only : rk2
         use lorenz, only : lorenz_dx, lorenz_dy, lorenz_dz
 
         implicit none
@@ -100,7 +100,7 @@ contains
         ! Return value
         real, dimension(size(s)) :: f
 
-        f = euler_step(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
+        f = rk2(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
 
     end function f
 

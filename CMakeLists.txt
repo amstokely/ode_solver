@@ -9,6 +9,7 @@ add_library(ode_solver
         ${CMAKE_SOURCE_DIR}/f90/src/parameters.f90
         ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
         ${CMAKE_SOURCE_DIR}/f90/src/euler.f90
+        ${CMAKE_SOURCE_DIR}/f90/src/rk.f90
         ${CMAKE_SOURCE_DIR}/f90/src/observer.f90
         ${CMAKE_SOURCE_DIR}/f90/src/lorenz.f90
 )
