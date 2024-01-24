@@ -72,23 +72,6 @@ contains
 
     end subroutine set_initial_state
 
-    function euler_step(t, s, dt)
-        use parameters, only: n, sigma, rho, beta
-
-        implicit none
-
-        real, intent(in) :: t, dt
-        real, dimension(:), intent(in) :: s
-
-        ! Return value
-        real, dimension(size(s)) :: euler_step
-
-        euler_step(1) = s(1) + dt * sigma * (s(2) - s(1))
-        euler_step(2) = s(2) + dt * (s(1) * (rho - s(3)) - s(2))
-        euler_step(3) = s(3) + dt * (s(1) * s(2) - beta * s(3))
-
-    end function euler_step
-
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !
@@ -102,13 +85,12 @@ contains
     !        s -- a state vector
     !
     ! Return value: the time-derivative, ds/dt, for the system at s
-    !        X[i + 1] = X[i] + dt * sigma * (Y[i] - X[i])
-    !        Y[i + 1] = Y[i] + dt * (X[i] * (rho - Z[i]) - Y[i])
-    !        Z[i + 1] = Z[i] + dt * (X[i] * Y[i] - beta * Z[i])
-    !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function f(t, s)
+
         use parameters, only : dt, n, sigma, rho, beta
+        use euler, only : euler_step
+        use lorenz, only : lorenz_dx, lorenz_dy, lorenz_dz
 
         implicit none
 
@@ -118,7 +100,7 @@ contains
         ! Return value
         real, dimension(size(s)) :: f
 
-        f = euler_step(t, s, dt)
+        f = euler_step(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
 
     end function f
 

@@ -1,0 +1,4 @@
+/build/
+/python/build/
+/python/dist/
+/cmake-build-debug/
