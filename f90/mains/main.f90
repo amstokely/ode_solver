@@ -1,5 +1,5 @@
 program ode_solver
-    use parameters, only: dt, n, sigma, beta, rho, x0, y0, z0, state_size
+    use parameters, only: dt, n, sigma, beta, rho, x0, y0, z0, state_size, output_file
     use equations, only: set_initial_state, f
     use observer, only: observer_init, observer_finalize, observer_write
     implicit none
@@ -10,6 +10,7 @@ program ode_solver
 
     call GET_COMMAND_ARGUMENT(1, dt_arg)
     call GET_COMMAND_ARGUMENT(2, n_arg)
+    call GET_COMMAND_ARGUMENT(3, output_file)
     read(dt_arg, *) dt
     read(n_arg, *) n
     x0 = 1.0

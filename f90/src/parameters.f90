@@ -8,5 +8,6 @@ module parameters
     real, parameter :: beta = 2.66667
     real :: dt, x0, y0, z0
     integer :: n, state_size
+    character(len=100) :: output_file
 
 end module parameters

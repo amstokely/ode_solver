@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 enable_language(Fortran)
 
 add_library(ode_solver
-        ${CMAKE_SOURCE_DIR}/f90/parameters.f90
-        ${CMAKE_SOURCE_DIR}/f90/equations.f90
-        ${CMAKE_SOURCE_DIR}/f90/observer.f90
+        ${CMAKE_SOURCE_DIR}/f90/src/parameters.f90
+        ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
+        ${CMAKE_SOURCE_DIR}/f90/src/observer.f90
 )
 set_target_properties(
         ode_solver
