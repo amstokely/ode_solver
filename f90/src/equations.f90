@@ -1,21 +1,21 @@
 module equations
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! Module: equations
-!
-! This module implements a system of ODEs by providing routines
-! to query the size of the system's state vector, get initial 
-! conditions, and return the time-derivative of the state vector given
-! the current state.
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !
+    ! Module: equations
+    !
+    ! This module implements a system of ODEs by providing routines
+    ! to query the size of the system's state vector, get initial
+    ! conditions, and return the time-derivative of the state vector given
+    ! the current state.
+    !
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private
+    private :: euler_step
 
     public :: get_system_size, set_initial_state, f
 
 
-    contains
+contains
 
 
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -32,15 +32,15 @@ module equations
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function get_system_size()
 
+        use parameters, only: state_size
+
         implicit none
 
         ! Return value
         integer :: get_system_size
 
 
-        !
-        ! Code...
-        !
+        get_system_size = state_size
 
     end function get_system_size
 
@@ -60,14 +60,15 @@ module equations
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine set_initial_state(s)
 
+        use parameters, only: x0, y0, z0
+
         implicit none
 
         real, dimension(:), intent(out) :: s
 
-
-        !
-        ! Code...
-        !
+        s(1) = x0
+        s(2) = y0
+        s(3) = z0
 
     end subroutine set_initial_state
 
@@ -84,9 +85,12 @@ module equations
     !        s -- a state vector
     !
     ! Return value: the time-derivative, ds/dt, for the system at s
-    !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    function f(t,s)
+    function f(t, s)
+
+        use parameters, only : dt, n, sigma, rho, beta
+        use euler, only : euler_step
+        use lorenz, only : lorenz_dx, lorenz_dy, lorenz_dz
 
         implicit none
 
@@ -96,10 +100,7 @@ module equations
         ! Return value
         real, dimension(size(s)) :: f
 
-
-        !
-        ! Code...
-        !
+        f = euler_step(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
 
     end function f
 

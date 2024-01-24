@@ -31,13 +31,17 @@ module observer
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine observer_init()
-
+        use parameters, only: output_file
         implicit none
 
+        integer :: io_status
 
-        !
-        ! Code...
-        !
+        open(UNIT=10, FILE=output_file, STATUS='NEW', ACTION='WRITE', IOSTAT=io_status)
+
+        if (io_status /= 0) then
+            write(*,*) 'Error opening output file'
+            stop
+        end if
 
     end subroutine observer_init
 
@@ -59,6 +63,8 @@ module observer
         implicit none
 
         real, dimension(:), intent(in) :: s
+
+        write(10,*) s
 
 
         !
@@ -84,6 +90,9 @@ module observer
     subroutine observer_finalize()
 
         implicit none
+
+        close(UNIT=10)
+
 
 
         !
