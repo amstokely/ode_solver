@@ -27,9 +27,9 @@ def plot_lorenz(
 if __name__ == "__main__":
     n: int = int(400 / 0.01)
     params = LorenzParameters(
-        x0=0.0,
+        x0=1.0,
         y0=1.0,
-        z0=1.05,
+        z0=1.0,
         dt=0.01,
         sigma=10.0,
         rho=28.0,
