@@ -60,7 +60,7 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine set_initial_state(s)
 
-        use parameters, only: x0, y0, z0
+        use lorenz, only: x0, y0, z0
 
         implicit none
 
@@ -88,9 +88,10 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function f(t, s)
 
-        use parameters, only : dt, n, sigma, rho, beta
-        use euler, only : euler_step
+        use parameters, only : dt, n
+        use rk, only : rk2
         use lorenz, only : lorenz_dx, lorenz_dy, lorenz_dz
+        use euler, only : euler_step
 
         implicit none
 
@@ -100,7 +101,7 @@ contains
         ! Return value
         real, dimension(size(s)) :: f
 
-        f = euler_step(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
+        f = rk2(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
 
     end function f
 

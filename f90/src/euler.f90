@@ -39,9 +39,9 @@ contains
 
         real, external :: f1, f2, f3
 
-        euler_step(1) = euler_step(1) + dt*f1(s, dt)
-        euler_step(2) = euler_step(2) + dt*f2(s, dt)
-        euler_step(3) = euler_step(3) + dt*f3(s, dt)
+        euler_step(1) = s(1) + dt*f1(s, dt)
+        euler_step(2) = s(2) + dt*f2(s, dt)
+        euler_step(3) = s(3) + dt*f3(s, dt)
     end function euler_step
 
 end module euler
