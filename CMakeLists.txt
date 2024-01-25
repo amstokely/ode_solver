@@ -7,6 +7,7 @@ enable_language(Fortran)
 
 add_library(ode_solver
         ${CMAKE_SOURCE_DIR}/f90/src/parameters.f90
+        ${CMAKE_SOURCE_DIR}/f90/src/ode_interface.f90
         ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
         ${CMAKE_SOURCE_DIR}/f90/src/euler.f90
         ${CMAKE_SOURCE_DIR}/f90/src/rk.f90

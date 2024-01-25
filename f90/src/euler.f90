@@ -22,14 +22,12 @@ contains
     ! Input: t - The current time.
     !        s - The current state vector.
     !        dt - The time step.
-    !        f1 - The first function of the system of ODEs.
-    !        f2 - The second function of the system of ODEs.
-    !        f3 - The third function of the system of ODEs.
+    !        f - The function that defines the system of ODEs.
     !
     ! Return value: euler_step - The state vector after one time step.
     !*/
-    function euler_step(t, s, dt, f1, f2, f3)
-
+    function euler_step(t, s, dt, f)
+        use ode_interface, only: ode
         implicit none
 
         real, intent(in) :: t, dt
@@ -37,11 +35,11 @@ contains
 
         real, dimension(size(s)) :: euler_step
 
-        real, external :: f1, f2, f3
+        procedure(ode), pointer :: f
 
-        euler_step(1) = s(1) + dt*f1(s, dt)
-        euler_step(2) = s(2) + dt*f2(s, dt)
-        euler_step(3) = s(3) + dt*f3(s, dt)
+
+        print *, s, dt, f(s)
+        euler_step = s + dt*f(s)
     end function euler_step
 
 end module euler

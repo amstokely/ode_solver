@@ -1,6 +1,6 @@
 program ode_solver
     use parameters, only: dt, n, state_size, output_file
-    use lorenz, only: x0, y0, z0
+    use lorenz_system, only: x0, y0, z0
     use equations, only: set_initial_state, f
     use observer, only: observer_init, observer_finalize, observer_write
     implicit none

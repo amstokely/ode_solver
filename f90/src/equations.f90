@@ -60,7 +60,7 @@ contains
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine set_initial_state(s)
 
-        use lorenz, only: x0, y0, z0
+        use lorenz_system, only: x0, y0, z0
 
         implicit none
 
@@ -90,7 +90,8 @@ contains
 
         use parameters, only : dt, n
         use rk, only : rk2
-        use lorenz, only : lorenz_dx, lorenz_dy, lorenz_dz
+        use lorenz_system, only : lorenz
+        use ode_interface, only : ode
         use euler, only : euler_step
 
         implicit none
@@ -101,7 +102,9 @@ contains
         ! Return value
         real, dimension(size(s)) :: f
 
-        f = rk2(t, s, dt, lorenz_dx, lorenz_dy, lorenz_dz)
+        procedure(ode), pointer :: fn
+
+        f = euler_step(t, s, dt, fn)
 
     end function f
 

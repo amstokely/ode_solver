@@ -1,4 +1,4 @@
-module lorenz
+module lorenz_system
     !/*
     ! Module: lorenz
     !
@@ -8,7 +8,7 @@ module lorenz
     implicit none
 
     private
-    public :: lorenz_dx, lorenz_dy, lorenz_dz, sigma, rho, beta, x0, y0, z0
+    public :: lorenz, sigma, rho, beta, x0, y0, z0
 
     real :: sigma = 10.0, rho = 28.0, beta = 8.0/3.0, x0, y0, z0
 
@@ -22,45 +22,15 @@ contains
     !
     ! Return value: The derivative of the x variable.
     !*/
-    function lorenz_dx(s)
+    function lorenz(s) result(y)
         implicit none
-        real, intent(in) :: s(3)
-        real :: lorenz_dx
+        real, dimension(:), intent(in) :: s
+        real, dimension(size(s)) :: y
 
-        lorenz_dx = sigma*(s(2)-s(1))
-    end function lorenz_dx
+        y(1) = sigma*(s(2)-s(1))
+        y(2) = s(1)*(rho-s(3))-s(2)
+        y(3) = s(1)*s(2)-beta*s(3)
+        print *, y
+    end function lorenz
 
-    !/*
-    ! Name: lorenz_dy
-    !
-    ! Description: This function returns the derivative of the y variable in the Lorenz system.
-    !
-    ! Input: s - The state vector of the system.
-    !
-    ! Return value: The derivative of the y variable.
-    !*/
-    function lorenz_dy(s)
-        implicit none
-        real, intent(in) :: s(3)
-        real :: lorenz_dy
-
-        lorenz_dy = s(1)*(rho-s(3))-s(2)
-    end function lorenz_dy
-
-    !/*
-    ! Name: lorenz_dz
-    !
-    ! Description: This function returns the derivative of the z variable in the Lorenz system.
-    !
-    ! Input: s - The state vector of the system.
-    !
-    ! Return value: The derivative of the z variable.
-    !*/
-    function lorenz_dz(s)
-        implicit none
-        real, intent(in) :: s(3)
-        real :: lorenz_dz
-
-        lorenz_dz = s(1)*s(2)-beta*s(3)
-    end function lorenz_dz
-end module lorenz
+end module lorenz_system

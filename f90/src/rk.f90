@@ -6,26 +6,24 @@ module rk
 
 contains
 
-    function rk2(t, s, dt, f1, f2, f3)
+    function rk2(t, s, dt, f)
         use euler, only : euler_step
+        use ode_interface, only : ode
 
         implicit none
 
         real, intent(in) :: t, dt
         real, dimension(:), intent(in) :: s
 
+        procedure(ode), pointer :: f
+
         real, dimension(size(s)) :: rk2
 
-        real, external :: f1, f2, f3
         real, dimension(size(s)) :: k1, k2
 
-        k1 = euler_step(t, s, dt, f1, f2, f3)
-        k1(1) = 0.5*(s(1) + k1(1))
-        k1(2) = 0.5*(s(2) + k1(2))
-        k1(3) = 0.5*(s(3) + k1(3))
-        rk2(1) = s(1) + dt*f1(k1, dt)
-        rk2(2) = s(2) + dt*f2(k1, dt)
-        rk2(3) = s(3) + dt*f3(k1, dt)
+        k1 = euler_step(t, s, dt, f)
+        k1 = 0.5*(s + k1)
+        rk2 = s + dt*f(k1)
 
     end function rk2
 
