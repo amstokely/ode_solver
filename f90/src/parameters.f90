@@ -8,17 +8,8 @@ module parameters
     !*/
     implicit none
 
-    !/*sigma: Sigma constant in the Lorenz equations!*/
-    real, parameter :: sigma = 10.0
-    !/*rho: Rho constant in the Lorenz equations!*/
-    real, parameter :: rho = 28.0
-    !/*beta: Beta constant in the Lorenz equations!*/
-    real, parameter :: beta = 2.66667
-    !/*
-    ! dt: time step size
-    ! x0, y0, z0: initial conditions
-    !*/
-    real :: dt, x0, y0, z0
+    !/*dt: time step size!*/
+    real :: dt
     !/*
     ! n: Total amount of time the system is evolved for. The total number of steps
     !    is n*dt

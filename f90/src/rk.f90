@@ -7,7 +7,6 @@ module rk
 contains
 
     function rk2(t, s, dt, f1, f2, f3)
-        use parameters, only : sigma, beta, rho
         use euler, only : euler_step
 
         implicit none

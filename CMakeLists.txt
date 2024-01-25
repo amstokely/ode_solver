@@ -19,8 +19,10 @@ set_target_properties(
         LINKER_LANGUAGE Fortran
 )
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
+
 add_executable(
-        main
-        ${CMAKE_SOURCE_DIR}/f90/mains/main.f90
+        lorenz
+        ${CMAKE_SOURCE_DIR}/f90/mains/lorenz.f90
 )
-target_link_libraries(main ode_solver)
+target_link_libraries(lorenz ode_solver)

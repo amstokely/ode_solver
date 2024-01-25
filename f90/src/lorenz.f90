@@ -7,6 +7,11 @@ module lorenz
     !*/
     implicit none
 
+    private
+    public :: lorenz_dx, lorenz_dy, lorenz_dz, sigma, rho, beta, x0, y0, z0
+
+    real :: sigma = 10.0, rho = 28.0, beta = 8.0/3.0, x0, y0, z0
+
 contains
     !/*
     ! Name: lorenz_dx
@@ -18,7 +23,6 @@ contains
     ! Return value: The derivative of the x variable.
     !*/
     function lorenz_dx(s)
-        use parameters, only : sigma, rho, beta, dt
         implicit none
         real, intent(in) :: s(3)
         real :: lorenz_dx
@@ -36,7 +40,6 @@ contains
     ! Return value: The derivative of the y variable.
     !*/
     function lorenz_dy(s)
-        use parameters, only : sigma, rho, beta, dt
         implicit none
         real, intent(in) :: s(3)
         real :: lorenz_dy
@@ -54,7 +57,6 @@ contains
     ! Return value: The derivative of the z variable.
     !*/
     function lorenz_dz(s)
-        use parameters, only : sigma, rho, beta, dt
         implicit none
         real, intent(in) :: s(3)
         real :: lorenz_dz
