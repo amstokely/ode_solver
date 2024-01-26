@@ -10,8 +10,6 @@ module equations
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private :: euler_step
-
     public :: get_system_size, set_initial_state, f
 
 
@@ -31,16 +29,14 @@ contains
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function get_system_size()
-
-        use parameters, only: state_size
-
+        use ode_system, only: system_size
         implicit none
 
         ! Return value
         integer :: get_system_size
 
 
-        get_system_size = state_size
+        get_system_size = system_size
 
     end function get_system_size
 
@@ -64,7 +60,9 @@ contains
 
         implicit none
 
-        real, dimension(:), intent(out) :: s
+        real, dimension(:), allocatable, intent(out) :: s
+        allocate(s(get_system_size()))
+
 
         s(1) = x0
         s(2) = y0
@@ -86,25 +84,19 @@ contains
     !
     ! Return value: the time-derivative, ds/dt, for the system at s
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    function f(t, s)
-
-        use parameters, only : dt, n
-        use rk, only : rk2
+    function f(t, s) result(y)
         use lorenz_system, only : lorenz
         use ode_interface, only : ode
-        use euler, only : euler_step
 
         implicit none
 
         real, intent(in) :: t
         real, dimension(:), intent(in) :: s
-
-        ! Return value
-        real, dimension(size(s)) :: f
+        real, dimension(size(s)) :: y
 
         procedure(ode), pointer :: fn
         fn => lorenz
-        f = rk2(t, s, dt, fn)
+        y = fn(t, s)
 
     end function f
 

@@ -22,8 +22,9 @@ contains
     !
     ! Return value: The derivative of the x variable.
     !*/
-    function lorenz(s) result(y)
+    function lorenz(t, s) result(y)
         implicit none
+        real, intent(in) :: t
         real, dimension(:), intent(in) :: s
         real, dimension(size(s)) :: y
 

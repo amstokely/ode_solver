@@ -23,7 +23,7 @@ contains
 
         k1 = euler_step(t, s, dt, f)
         k1 = 0.5*(s + k1)
-        rk2 = s + dt*f(k1)
+        rk2 = s + dt*f(t, k1)
 
     end function rk2
 

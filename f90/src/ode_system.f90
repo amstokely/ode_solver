@@ -1,8 +1,11 @@
-module ode_interface
+module ode_system
     abstract interface
-        function ode(s) result(y)
+        function ode(t, s) result(y)
+            real, intent(in) :: t
             real, dimension(:), intent(in) :: s
             real, dimension(size(s)) :: y
         end function ode
     end interface
-end module ode_interface
+    integer :: system_size
+
+end module ode_system

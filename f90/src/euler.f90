@@ -37,7 +37,7 @@ contains
         real, dimension(size(s)) :: Y
 
 
-        Y(:) = s(:) + dt*f(s)
+        Y(:) = s(:) + dt*f(t, s)
     end function euler_step
 
 end module euler

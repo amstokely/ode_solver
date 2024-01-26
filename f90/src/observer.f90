@@ -30,13 +30,13 @@ module observer
     ! Output: none
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    subroutine observer_init()
-        use parameters, only: output_file
+    subroutine observer_init(output_file)
         implicit none
 
         integer :: io_status
+        character(len=100), intent(in) :: output_file
 
-        open(UNIT=10, FILE=output_file, STATUS='NEW', ACTION='WRITE', IOSTAT=io_status)
+        open(unit=10, file=output_file, status='replace', action='write', iostat=io_status)
 
         if (io_status /= 0) then
             write(*,*) 'Error opening output file'
@@ -66,11 +66,6 @@ module observer
 
         write(10,*) s
 
-
-        !
-        ! Code...
-        !
-
     end subroutine observer_write
 
 
@@ -92,13 +87,6 @@ module observer
         implicit none
 
         close(UNIT=10)
-
-
-
-        !
-        ! Code...
-        !
-
     end subroutine observer_finalize
 
 end module observer
