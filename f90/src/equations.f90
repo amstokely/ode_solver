@@ -103,8 +103,8 @@ contains
         real, dimension(size(s)) :: f
 
         procedure(ode), pointer :: fn
-
-        f = euler_step(t, s, dt, fn)
+        fn => lorenz
+        f = rk2(t, s, dt, fn)
 
     end function f
 

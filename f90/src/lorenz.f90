@@ -30,7 +30,6 @@ contains
         y(1) = sigma*(s(2)-s(1))
         y(2) = s(1)*(rho-s(3))-s(2)
         y(3) = s(1)*s(2)-beta*s(3)
-        print *, y
     end function lorenz
 
 end module lorenz_system

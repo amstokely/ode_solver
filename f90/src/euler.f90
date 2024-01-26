@@ -26,20 +26,18 @@ contains
     !
     ! Return value: euler_step - The state vector after one time step.
     !*/
-    function euler_step(t, s, dt, f)
+    function euler_step(t, s, dt, f) result(Y)
         use ode_interface, only: ode
         implicit none
 
         real, intent(in) :: t, dt
         real, dimension(:), intent(in) :: s
+        procedure(ode), pointer, intent(in) :: f
 
-        real, dimension(size(s)) :: euler_step
-
-        procedure(ode), pointer :: f
+        real, dimension(size(s)) :: Y
 
 
-        print *, s, dt, f(s)
-        euler_step = s + dt*f(s)
+        Y(:) = s(:) + dt*f(s)
     end function euler_step
 
 end module euler
