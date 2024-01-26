@@ -85,8 +85,7 @@ contains
     ! Return value: the time-derivative, ds/dt, for the system at s
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function f(t, s) result(y)
-        use lorenz_system, only : lorenz
-        use ode_interface, only : ode
+        use ode_system, only: system_size, system
 
         implicit none
 
@@ -94,9 +93,7 @@ contains
         real, dimension(:), intent(in) :: s
         real, dimension(size(s)) :: y
 
-        procedure(ode), pointer :: fn
-        fn => lorenz
-        y = fn(t, s)
+        y = system(t, s)
 
     end function f
 

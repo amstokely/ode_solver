@@ -1,8 +1,8 @@
 program ode_solver
     use equations, only : set_initial_state, f
     use observer, only : observer_init, observer_finalize, observer_write
-    use lorenz_system, only : x0, y0, z0
-    use ode_system, only : system_size
+    use lorenz_system, only : x0, y0, z0, lorenz
+    use ode_system, only : system_size, system
     use euler, only : euler_step
     use rk, only: rk2
     implicit none
@@ -23,6 +23,7 @@ program ode_solver
     read(dt_arg, *) dt
     read(n_arg, *) n
     system_size = 3
+    system => lorenz
     call set_initial_state(s)
     t = 0.0
     call observer_init(output_file)

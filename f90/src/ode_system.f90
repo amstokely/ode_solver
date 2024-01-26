@@ -7,5 +7,6 @@ module ode_system
         end function ode
     end interface
     integer :: system_size
+    procedure(ode), pointer :: system
 
 end module ode_system
