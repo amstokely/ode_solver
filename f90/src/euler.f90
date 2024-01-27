@@ -27,7 +27,7 @@ contains
     ! Return value: euler_step - The state vector after one time step.
     !*/
     function euler_step(t, s, dt, f) result(Y)
-        use ode_interface, only: ode
+        use ode_system, only: ode
         implicit none
 
         real, intent(in) :: t, dt

@@ -12,6 +12,7 @@ add_library(ode_solver
         ${CMAKE_SOURCE_DIR}/f90/src/rk.f90
         ${CMAKE_SOURCE_DIR}/f90/src/observer.f90
         ${CMAKE_SOURCE_DIR}/f90/src/lorenz_system.f90
+            ${CMAKE_SOURCE_DIR}/f90/src/command_line_setters.f90
 )
 set_target_properties(
         ode_solver

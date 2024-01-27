@@ -8,11 +8,28 @@ module lorenz_system
     implicit none
 
     private
-    public :: lorenz, sigma, rho, beta, x0, y0, z0
+    public :: lorenz, sigma, rho, beta, x0, y0, z0, set_x0, set_y0, set_z0
 
     real :: sigma = 10.0, rho = 28.0, beta = 8.0/3.0, x0, y0, z0
 
 contains
+    subroutine set_x0(x0_arg)
+        implicit none
+        character(len=*), intent(in) :: x0_arg
+        read(x0_arg, *) x0
+    end subroutine set_x0
+
+    subroutine set_y0(y0_arg)
+        implicit none
+        character(len=*), intent(in) :: y0_arg
+        read(y0_arg, *) y0
+    end subroutine set_y0
+
+    subroutine set_z0(z0_arg)
+        implicit none
+        character(len=*), intent(in) :: z0_arg
+        read(z0_arg, *) z0
+    end subroutine set_z0
     !/*
     ! Name: lorenz_dx
     !
