@@ -1,14 +1,18 @@
 program ode_solver
     use equations, only : set_initial_state, f
     use observer, only : observer_init, observer_finalize, observer_write
-    use lorenz_system, only : x0, y0, z0, lorenz, set_x0, set_y0, set_z0, set_sigma, set_rho, set_beta, sigma, rho, beta
+    use lorenz_system, only : x0, y0, z0, lorenz, &
+            set_x0, set_y0, set_z0, set_sigma, &
+            set_rho, set_beta, sigma, rho, beta
     use ode_system, only : system_size, system
     use command_line_setters
     use euler, only : euler_step
     use rk, only: rk2
     implicit none
 
-    character(len = 100) :: dt_arg, n_arg, output_file, x0_arg, y0_arg, z0_arg, sigma_arg, rho_arg, beta_arg
+    character(len = 100) :: dt_arg, n_arg, output_file, &
+            x0_arg, y0_arg, z0_arg, &
+            sigma_arg, rho_arg, beta_arg
     integer :: n
     real :: dt, t
     real, dimension(:), allocatable :: s
