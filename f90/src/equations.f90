@@ -53,7 +53,6 @@ contains
         implicit none
         real, dimension(:), allocatable, intent(out) :: s
         call system_initial_state(s)
-        print *, "Initial state: ", s
     end subroutine set_initial_state
 
 
