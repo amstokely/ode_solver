@@ -13,7 +13,6 @@ contains
         integer :: system_size
 
         call system_init()
-        system_size = get_system_size()
         call set_initial_state(s)
         call integrator_init()
         call observer_init()
