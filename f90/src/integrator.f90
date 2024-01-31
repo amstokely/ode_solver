@@ -91,21 +91,28 @@ contains
         close(10)
     end subroutine rk2_integrator_init
 
-    function rk2_step(t, s, dt)
+    function rk2_step(t, s, delta_t)
         use euler_integrator_module, only : euler_step
         use equations, only : f
 
         implicit none
 
-        real, intent(in) :: t, dt
+        real, intent(in) :: t
+        real, intent(in), optional :: delta_t
         real, dimension(:), intent(in) :: s
 
         real, dimension(size(s)) :: rk2_step
         real, dimension(size(s)) :: k1, k2
 
-        k1 = euler_step(t, s, dt)
-        k1 = 0.5 * (s + k1)
-        rk2_step = s + dt * f(t, k1)
+        if (present(delta_t)) then
+            k1 = euler_step(t, s, delta_t)
+            k2 = euler_step(t + delta_t, k1, delta_t)
+            rk2_step = s + 0.5 * delta_t * (k1 + k2)
+        else
+            k1 = euler_step(t, s, dt)
+            k1 = 0.5 * (s + k1)
+            rk2_step = s + dt * f(t, k1)
+        end if
     end function rk2_step
 
     subroutine rk2_integrator(t, s)
