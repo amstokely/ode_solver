@@ -9,10 +9,13 @@ module observer
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private
+    private :: observer_settings, output_file
 
-    public :: observer_init, observer_write, observer_finalize   
+    public :: observer_init, observer_write, observer_finalize
 
+    character(len=256) :: output_file
+
+    namelist /observer_settings/ output_file
 
     contains
 
@@ -30,11 +33,14 @@ module observer
     ! Output: none
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    subroutine observer_init(output_file)
+    subroutine observer_init()
         implicit none
-
+        character(len=256) :: namelist_file
         integer :: io_status
-        character(len=100), intent(in) :: output_file
+        call get_command_argument(1, namelist_file)
+        open(unit=10, file=namelist_file, status='old', action='read')
+        read(10, nml=observer_settings)
+        close(10)
 
         open(unit=10, file=output_file, status='replace', action='write', iostat=io_status)
 
@@ -63,7 +69,6 @@ module observer
         implicit none
 
         real, dimension(:), intent(in) :: s
-
         write(10,*) s
 
     end subroutine observer_write

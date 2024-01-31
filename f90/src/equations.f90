@@ -12,7 +12,6 @@ module equations
 
     public :: get_system_size, set_initial_state, f
 
-
 contains
 
 
@@ -29,15 +28,10 @@ contains
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function get_system_size()
-        use ode_system, only: system_size
+        use system_module, only: system_size
         implicit none
-
-        ! Return value
         integer :: get_system_size
-
-
         get_system_size = system_size
-
     end function get_system_size
 
 
@@ -45,8 +39,8 @@ contains
     !
     ! Name: set_initial_state
     !
-    ! Description: Initializes a system state vector. Upon returning, 
-    !   the elements of s have been set to contain the initial condition 
+    ! Description: Initializes a system state vector. Upon returning,
+    !   the elements of s have been set to contain the initial condition
     !   of the system.
     !
     ! Input: none
@@ -55,19 +49,11 @@ contains
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine set_initial_state(s)
-
-        use lorenz_system, only: x0, y0, z0
-
+        use system_module, only: system_initial_state
         implicit none
-
         real, dimension(:), allocatable, intent(out) :: s
-        allocate(s(get_system_size()))
-
-
-        s(1) = x0
-        s(2) = y0
-        s(3) = z0
-
+        call system_initial_state(s)
+        print *, "Initial state: ", s
     end subroutine set_initial_state
 
 
@@ -75,8 +61,8 @@ contains
     !
     ! Name: f
     !
-    ! Description: This function returns a tendency vector, ds/dt, for 
-    !   the system implemented in this module, given the current state of 
+    ! Description: This function returns a tendency vector, ds/dt, for
+    !   the system implemented in this module, given the current state of
     !   the system.
     !
     ! Input: t -- the time at which the state, s, is valid
@@ -85,14 +71,12 @@ contains
     ! Return value: the time-derivative, ds/dt, for the system at s
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     function f(t, s) result(y)
-        use ode_system, only: system_size, system
-
+        use system_module, only : system
         implicit none
 
         real, intent(in) :: t
         real, dimension(:), intent(in) :: s
         real, dimension(size(s)) :: y
-
         y = system(t, s)
 
     end function f
