@@ -1,20 +1,17 @@
 @startuml
+
 allow_mixing
 
+interface solver
 interface equations
-interface observer
-interface lorenz
-interface euler
 interface integrator
-interface rk
-node main
+interface observer
+interface system
 
-main -down-> equations
-main -down-> observer
-equations -down-> lorenz
-main -down-> integrator
-integrator -down-> euler
-integrator -down-> rk
+interface solver {
+    +init()
+    +solve()
+}
 
 interface equations {
     +get_system_size()
@@ -22,17 +19,20 @@ interface equations {
     +f(t, s)
 }
 
-interface observer {
- +observer_init()
- +observer_write()
- +observer_finalize()
+interface integrator {
+    +integrator(t, s)
 }
 
-interface integrator {
-    + dt
-    + n
-    + type
+interface system {
+    +system(t, s)
 }
+
+interface observer {
+    +init()
+    +write()
+    +finalize()
+}
+
 
 
 @enduml
