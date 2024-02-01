@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_language(Fortran)
 
+set(OUTPUT_DIR CACHE PATH "")
+if(OUTPUT_DIR STREQUAL "")
+    set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/output)
+endif()
+
 add_library(ode_solver
         ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
         ${CMAKE_SOURCE_DIR}/f90/src/integrator.f90
@@ -25,3 +30,9 @@ add_executable(
         ${CMAKE_SOURCE_DIR}/f90/mains/ode_solver.f90
 )
 target_link_libraries(lorenz ode_solver)
+
+ADD_CUSTOM_COMMAND(
+        TARGET lorenz
+        COMMAND sed -i -e 's|OUTPUT_DIR|'${OUTPUT_DIR}'|g' ${CMAKE_SOURCE_DIR}/ode_solver.cfg
+
+        )
