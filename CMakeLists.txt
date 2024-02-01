@@ -9,6 +9,9 @@ set(OUTPUT_DIR CACHE PATH "")
 if(OUTPUT_DIR STREQUAL "")
     set(OUTPUT_DIR ${CMAKE_SOURCE_DIR}/output)
 endif()
+if(NOT EXISTS ${OUTPUT_DIR})
+    file(MAKE_DIRECTORY ${OUTPUT_DIR})
+endif()
 
 add_library(ode_solver
         ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
@@ -30,9 +33,11 @@ add_executable(
         ${CMAKE_SOURCE_DIR}/f90/mains/ode_solver.f90
 )
 target_link_libraries(lorenz ode_solver)
-
-ADD_CUSTOM_COMMAND(
-        TARGET lorenz
+ADD_CUSTOM_TARGET(
+        configure_namelist
         COMMAND sed -i -e 's|OUTPUT_DIR|'${OUTPUT_DIR}'|g' ${CMAKE_SOURCE_DIR}/ode_solver.cfg
-
+        )
+ADD_CUSTOM_TARGET(
+        restore_namelist
+        COMMAND sed -i -e 's|'${OUTPUT_DIR}'|OUTPUT_DIR|g' ${CMAKE_SOURCE_DIR}/ode_solver.cfg
         )

@@ -1,12 +1,19 @@
 import os
+import argparse
+import os
 
 import numpy as np
 from matplotlib import pyplot as plt
 
 if __name__ == '__main__':
+    # Write a parser to read in input from command line
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output_dir", type=str, default=os.getcwd())
+    args = parser.parse_args()
+    output_dir = args.output_dir
     s = []
     S = []
-    with open("output.txt", "r") as f:
+    with open(f"{output_dir}/output.txt", "r") as f:
         for line in f:
             s.append(line)
     for line in s:
