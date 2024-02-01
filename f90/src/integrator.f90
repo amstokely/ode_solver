@@ -124,7 +124,7 @@ contains
         integer :: i
 
         do i = 1, n
-            s(:) = rk2_step(t, s)
+            s(:) = rk2_step(t, s, dt)
             t = t + dt
             call observer_write(s)
         end do
