@@ -1,97 +1,159 @@
 module observer
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-! Module: observer
-!
-! This module is used to "observe" the state vector of a 
-! system of equations by writing that state in some format to a file
-! for later viewing or plotting by the user.
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !
+    ! Module: observer
+    !
+    ! This module is used to "observe" the state vector of a
+    ! system of equations by writing that state in some format to a file
+    ! for later viewing or plotting by the user.
+    !
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private :: observer_settings, output_file
+    private :: observer_settings, &
+            output_file, ncid, &
+            dimid, varid, n, check_error, ts, &
+            params
 
     public :: observer_init, observer_write, observer_finalize
 
-    character(len=256) :: output_file
+    character(len = 256) :: output_file, params
+    integer :: ncid, varid, n, ts
+    integer :: dimid(2)
 
-    namelist /observer_settings/ output_file
+    namelist / observer_settings / output_file, n, params
 
-    contains
+contains
+
+    subroutine check_error(netcdf_op, op_name, file_name)
+        use netcdf
+        implicit none
+        integer, intent(in) :: netcdf_op
+        character(len = *), intent(in), optional :: file_name
+        character(len = *), intent(in), optional :: op_name
+        character(len = 1000) :: error_message
+
+        if (netcdf_op /= 0) then
+            error_message = "----------------------------------------------------" // achar(10) &
+                    // " ERROR" // achar(10)
+            if (present(op_name)) then
+                error_message = trim(error_message) // " Function: " // op_name // achar(10)
+            end if
+            if (present(file_name)) then
+                error_message = trim(error_message) // " File: " // file_name // achar(10)
+            end if
+            error_message = trim(error_message) // " Error message: " // nf90_strerror(netcdf_op) // achar(10) &
+                    // "----------------------------------------------------" &
+                    // achar(10)
+            write(*, *) trim(error_message)
+            stop
+        end if
+    end subroutine check_error
 
 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !
     ! Name: observer_init
     !
-    ! Description: Initializes the observer module by, e.g., opening 
-    !   files for later writing. This routine must be called before the 
-    !   first call to observer_write().
+    ! Description: Initializes the observer module by, e.g., opening
+    ! files for later writing. This routine must be called before the
+    ! first call to observer_write().
     !
     ! Input: none
     !
     ! Output: none
     !
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     subroutine observer_init()
+        use netcdf
+        use equations, only : get_system_size
+        use settings_module, only : output_file, n
         implicit none
-        character(len=256) :: namelist_file
-        integer :: io_status
-        call get_command_argument(1, namelist_file)
-        open(unit=10, file=namelist_file, status='old', action='read')
-        read(10, nml=observer_settings)
-        close(10)
-
-        open(unit=10, file=output_file, status='replace', action='write', iostat=io_status)
-
-        if (io_status /= 0) then
-            write(*,*) 'Error opening output file'
-            stop
+        character(len = 256) :: namelist_file, name
+        integer :: io_status, status, ndims, tmp
+        integer :: dimid(1)
+        logical :: exists
+        inquire(file = trim(output_file), exist = exists)
+        if (exists) then
+            ! delete the file
+            open(unit = 10, file = trim(output_file), status = 'old')
+            close(10, status = 'delete')
         end if
-
+        status = nf90_create(&
+            path = trim(output_file), &
+            cmode = nf90_netcdf4, &
+            ncid = ncid&
+            )
+        status = nf90_def_dim(&
+            ncid = ncid, &
+            name = 'u', &
+            len = n * 3, &
+            dimid = dimid(1) &
+            )
+        status = nf90_def_var(&
+                ncid = ncid, &
+                name = 's', &
+                xtype = nf90_float, &
+                dimids = dimid, &
+                varid = varid &
+                )
+        ts = 1
     end subroutine observer_init
 
 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !
     ! Name: observer_write
     !
     ! Description: Formats and writes the contents of the state vector s
-    !   to a file.
+    ! to a file.
     !
     ! Input: s -- the state vector
     !
     ! Output: none
     !
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine observer_write(s)
-
+        use netcdf
+        use settings_module, only : n
         implicit none
 
         real, dimension(:), intent(in) :: s
-        write(10,*) s
-
+        integer :: i, system_size
+        system_size = size(s)
+        do i = 1, system_size
+            call check_error(nf90_put_var(&
+                    ncid = ncid, &
+                    varid = varid, &
+                    values = s(i:i), &
+                    start = [ts + (i - 1) * n], &
+                    count = [1] &
+                    ))
+        end do
+        ts = ts + 1
     end subroutine observer_write
 
 
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !
     ! Name: observer_finalize
     !
     ! Description: Finalizes the observer module by, e.g., closing any
-    !   files that were opened by the module. This routine must be called 
-    !   only once after all calls to observer_write() have been made.
+    ! files that were opened by the module. This routine must be called
+    ! only once after all calls to observer_write() have been made.
     !
     ! Input: none
     !
     ! Output: none
     !
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine observer_finalize()
-
+        use netcdf
         implicit none
 
-        close(UNIT=10)
+        integer :: status
+
+        status = nf90_close(ncid)
     end subroutine observer_finalize
 
 end module observer

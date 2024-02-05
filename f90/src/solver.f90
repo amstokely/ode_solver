@@ -5,13 +5,13 @@ module solver_module
 
 contains
     subroutine init()
-        use equations, only : get_system_size, set_initial_state
+        use equations, only : set_initial_state
         use observer, only : observer_init
-        use integrator_module, only: integrator_init, integrator
+        use integrator_module, only: integrator_init
         use system_module, only: system_init
+        use settings_module, only: read_settings
         implicit none
-        integer :: system_size
-
+        call read_settings()
         call system_init()
         call set_initial_state(s)
         call integrator_init()

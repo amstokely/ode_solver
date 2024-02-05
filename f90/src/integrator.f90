@@ -13,44 +13,26 @@ module euler_integrator_module
 
     implicit none
 
-    private :: euler_integrator_settings
-
-    public :: euler_step, euler_integrator, euler_integrator_init, dt, n
-
-    real :: dt
-    integer :: n
-
-    namelist /euler_integrator_settings/ dt, n
+    public :: euler_step, euler_integrator
 
 contains
-    subroutine euler_integrator_init()
-        implicit none
-        character(len = 256) :: namelist_file
-        call get_command_argument(1, namelist_file)
-        open(unit = 10, file = namelist_file, status = 'old', action = 'read')
-        read(10, nml = euler_integrator_settings)
-        close(10)
-    end subroutine euler_integrator_init
 
-    function euler_step(t, s, step_size) result(Y)
+    function euler_step(t, s) result(Y)
         use equations, only : f
+        use settings_module, only : dt
         implicit none
 
         real, intent(in) :: t
-        real, intent(in), optional :: step_size
         real, dimension(:), intent(in) :: s
         real, dimension(size(s)) :: Y
 
-        if (present(step_size)) then
-            Y = s + step_size * f(t, s)
-        else
-            Y = s + dt * f(t, s)
-        end if
+        Y = s + dt * f(t, s)
 
     end function euler_step
 
     subroutine euler_integrator(t, s)
         use observer, only : observer_write
+        use settings_module, only : dt, n
         implicit none
 
         real, intent(inout) :: t
@@ -70,59 +52,36 @@ end module euler_integrator_module
 module rk_integrator_module
     implicit none
 
-    private :: rk2_integrator_settings
-
-    public :: rk2_integrator, rk2_integrator_init, dt, n
-
-    real :: dt
-    integer :: n
-
-    namelist /rk2_integrator_settings/ dt, n
-
+    public :: rk2_integrator
 
 contains
 
-    subroutine rk2_integrator_init()
-        implicit none
-        character(len = 256) :: namelist_file
-        call get_command_argument(1, namelist_file)
-        open(unit = 10, file = namelist_file, status = 'old', action = 'read')
-        read(10, nml = rk2_integrator_settings)
-        close(10)
-    end subroutine rk2_integrator_init
-
-    function rk2_step(t, s, delta_t)
+    function rk2_step(t, s)
         use euler_integrator_module, only : euler_step
         use equations, only : f
+        use settings_module, only : dt
 
         implicit none
 
         real, intent(in) :: t
-        real, intent(in), optional :: delta_t
         real, dimension(:), intent(in) :: s
 
         real, dimension(size(s)) :: rk2_step
         real, dimension(size(s)) :: k1, k2
 
-        if (present(delta_t)) then
-            k1 = euler_step(t, s, delta_t)
-            k2 = euler_step(t + delta_t, k1, delta_t)
-            rk2_step = s + 0.5 * delta_t * (k1 + k2)
-        else
-            k1 = euler_step(t, s, dt)
-            k1 = 0.5 * (s + k1)
-            rk2_step = s + dt * f(t, k1)
-        end if
+        k1 = euler_step(t, s)
+        k1 = 0.5 * (s + k1)
+        rk2_step = s + dt * f(t, k1)
     end function rk2_step
 
     subroutine rk2_integrator(t, s)
         use observer, only : observer_write
+        use settings_module, only : dt, n
         implicit none
 
         real, intent(inout) :: t
         real, dimension(:), intent(inout) :: s
         integer :: i
-
         do i = 1, n
             s(:) = rk2_step(t, s)
             t = t + dt
@@ -137,29 +96,22 @@ module integrator_module
     implicit none
 
     public :: integrator, integrator_init
-    private :: integrator_settings, integrator_name
+    private :: integrator_name
 
     character(len = 256) :: integrator_name
-    namelist /integrator_settings/ integrator_name
 
     procedure(abstract_integrator), pointer :: integrator
 
 contains
     subroutine integrator_init()
-        use euler_integrator_module, only : euler_integrator_init, euler_integrator
-        use rk_integrator_module, only : rk2_integrator_init, rk2_integrator
+        use euler_integrator_module, only : euler_integrator
+        use rk_integrator_module, only : rk2_integrator
+        use settings_module, only : integrator_name
         implicit none
 
-        character(len = 256) :: namelist_file
-        call get_command_argument(1, namelist_file)
-        open(unit = 10, file = namelist_file, status = 'old', action = 'read')
-        read(10, nml = integrator_settings)
-        close(10)
-        if (integrator_name == 'rk2') then
-            call rk2_integrator_init()
+        if (trim(integrator_name) == 'rk2') then
             integrator => rk2_integrator
-        else if (integrator_name == 'euler') then
-            call euler_integrator_init()
+        else if (trim(integrator_name) == 'euler') then
             integrator => euler_integrator
         end if
     end subroutine integrator_init
