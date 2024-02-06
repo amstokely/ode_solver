@@ -49,7 +49,7 @@ contains
     function lorenz_system(t, s) result(y)
         implicit none
         real, intent(in) :: t
-        real, dimension(:), intent(in) :: s
+        real, dimension(:), target, intent(in) :: s
         real, dimension(size(s)) :: y
 
         y(1) = sigma * (s(2) - s(1))

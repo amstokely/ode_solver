@@ -3,7 +3,7 @@ module abstract_system_module
         function abstract_system(t, s) result(y)
             implicit none
             real, intent(in) :: t
-            real, dimension(:), intent(in) :: s
+            real, dimension(:), target, intent(in) :: s
             real, dimension(size(s)) :: y
         end function abstract_system
 
@@ -34,6 +34,10 @@ contains
                 lorenz_init, &
                 lorenz_system_initial_state, &
                 lorenz_system_size
+        use shallow_water_system_module, only : shallow_water_init, &
+                shallow_water_system, &
+                shallow_water_system_initial_state, &
+                shallow_water_system_size
         use settings_module, only : system_name
         implicit none
 
@@ -42,6 +46,12 @@ contains
             system => lorenz_system
             system_initial_state => lorenz_system_initial_state
             system_size = lorenz_system_size
+        end if
+        if (trim(system_name) == 'shallow_water') then
+            call shallow_water_init()
+            system => shallow_water_system
+            system_initial_state => shallow_water_system_initial_state
+            system_size = shallow_water_system_size
         end if
     end subroutine system_init
 

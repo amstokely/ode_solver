@@ -70,7 +70,7 @@ contains
         use settings_module, only : output_file, n
         implicit none
         character(len = 256) :: namelist_file, name
-        integer :: io_status, status, ndims, tmp
+        integer :: io_status, status, ndims
         integer :: dimid(1)
         logical :: exists
         inquire(file = trim(output_file), exist = exists)
@@ -80,16 +80,16 @@ contains
             close(10, status = 'delete')
         end if
         status = nf90_create(&
-            path = trim(output_file), &
-            cmode = nf90_netcdf4, &
-            ncid = ncid&
-            )
-        status = nf90_def_dim(&
-            ncid = ncid, &
-            name = 'u', &
-            len = n * 3, &
-            dimid = dimid(1) &
-            )
+                path = trim(output_file), &
+                cmode = nf90_netcdf4, &
+                ncid = ncid&
+                )
+        call check_error(nf90_def_dim(&
+                ncid = ncid, &
+                name = 'u', &
+                len = nf90_unlimited, &
+                dimid = dimid(1) &
+                ), op_name = 'nf90_def_dim')
         status = nf90_def_var(&
                 ncid = ncid, &
                 name = 's', &
@@ -97,7 +97,7 @@ contains
                 dimids = dimid, &
                 varid = varid &
                 )
-        ts = 1
+        ts = 0
     end subroutine observer_init
 
 
@@ -116,20 +116,19 @@ contains
     subroutine observer_write(s)
         use netcdf
         use settings_module, only : n
+        use equations, only : get_system_size
         implicit none
 
         real, dimension(:), intent(in) :: s
-        integer :: i, system_size
-        system_size = size(s)
-        do i = 1, system_size
-            call check_error(nf90_put_var(&
-                    ncid = ncid, &
-                    varid = varid, &
-                    values = s(i:i), &
-                    start = [ts + (i - 1) * n], &
-                    count = [1] &
-                    ))
-        end do
+        integer :: offset, i
+        offset = size(s) / get_system_size()
+        call check_error(nf90_put_var(&
+                ncid = ncid, &
+                varid = varid, &
+                values = s(1:offset), &
+                start = [ts * offset + (i - 1) * n * offset + 1], &
+                count = [offset] &
+                ))
         ts = ts + 1
     end subroutine observer_write
 

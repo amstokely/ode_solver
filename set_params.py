@@ -1,18 +1,39 @@
 import netCDF4 as nc
+import numpy as np
+
+Lx = 1E+4
+Ly = 1E+4
+nx = 150
+ny = 150
+dx = float(Lx / (nx - 1))
+dy = float(Ly / (ny - 1))
+X = np.random.normal(
+    1, 0.4, (nx * ny,)).astype('f4'
+                                 ).reshape((nx, ny))
+Y = np.random.normal(
+    1, 0.4, (nx * ny,)).astype('f4'
+                               ).reshape((nx, ny))
+
+
+
+ic = np.zeros(3 * nx * ny, dtype='f4')
+ic[:nx * ny] = X.flatten()
+ic[nx * ny:2 * nx * ny] = Y.flatten()
+ic[2 * nx * ny:] = np.random.rand(nx * ny).astype('f4')
+
 
 ds = nc.Dataset('params.nc', 'w', format='NETCDF4')
 ds.createDimension('n', 1)
-sigma = ds.createVariable('sigma', 'f4', )
-sigma[:] = [10.0]
-rho = ds.createVariable('rho', 'f4', )
-rho[:] = [28.0]
-beta = ds.createVariable('beta', 'f4', )
-beta[:] = [8.0 / 3.0]
-x0 = ds.createVariable('x0', 'f4', )
-x0[:] = [10.0]
-y0 = ds.createVariable('y0', 'f4', )
-y0[:] = [0.0]
-z0 = ds.createVariable('z0', 'f4', )
-z0[:] = [10.0]
+nc_nx = ds.createVariable('nx', 'i4', dimensions=('n',))
+nc_nx[:] = nx
+nc_ny = ds.createVariable('ny', 'i4', dimensions=('n',))
+nc_ny[:] = ny
+nc_dx = ds.createVariable('dx', 'f4', dimensions=('n',))
+nc_dx[:] = dx
+nc_dy = ds.createVariable('dy', 'f4', dimensions=('n',))
+nc_dy[:] = dy
+ic_dim = ds.createDimension('ic_dim', 3 * nx * ny)
+nc_ic = ds.createVariable('ic', 'f4', ('ic_dim',))
+nc_ic[:] = ic
 ds.close()
-
+ds = nc.Dataset('output.nc', 'w', format='NETCDF4')
