@@ -9,46 +9,12 @@ module observer
     !
     ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    private :: observer_settings, &
-            output_file, ncid, &
-            dimid, varid, n, check_error, ts, &
-            params
-
     public :: observer_init, observer_write, observer_finalize
 
     character(len = 256) :: output_file, params
-    integer :: ncid, varid, n, ts
-    integer :: dimid(2)
-
-    namelist / observer_settings / output_file, n, params
+    integer :: ncid, varid, ts
 
 contains
-
-    subroutine check_error(netcdf_op, op_name, file_name)
-        use netcdf
-        implicit none
-        integer, intent(in) :: netcdf_op
-        character(len = *), intent(in), optional :: file_name
-        character(len = *), intent(in), optional :: op_name
-        character(len = 1000) :: error_message
-
-        if (netcdf_op /= 0) then
-            error_message = "----------------------------------------------------" // achar(10) &
-                    // " ERROR" // achar(10)
-            if (present(op_name)) then
-                error_message = trim(error_message) // " Function: " // op_name // achar(10)
-            end if
-            if (present(file_name)) then
-                error_message = trim(error_message) // " File: " // file_name // achar(10)
-            end if
-            error_message = trim(error_message) // " Error message: " // nf90_strerror(netcdf_op) // achar(10) &
-                    // "----------------------------------------------------" &
-                    // achar(10)
-            write(*, *) trim(error_message)
-            stop
-        end if
-    end subroutine check_error
-
 
     ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     !
@@ -66,11 +32,11 @@ contains
 
     subroutine observer_init()
         use netcdf
+        use netcdf_utils_module, only : check_error
         use equations, only : get_system_size
         use settings_module, only : output_file, n
         implicit none
         character(len = 256) :: namelist_file, name
-        integer :: io_status, status, ndims
         integer :: dimid(1)
         logical :: exists
         inquire(file = trim(output_file), exist = exists)
@@ -79,24 +45,24 @@ contains
             open(unit = 10, file = trim(output_file), status = 'old')
             close(10, status = 'delete')
         end if
-        status = nf90_create(&
+        call check_error(nf90_create(&
                 path = trim(output_file), &
                 cmode = nf90_netcdf4, &
                 ncid = ncid&
-                )
+                ), op_name = 'nf90_create')
         call check_error(nf90_def_dim(&
                 ncid = ncid, &
                 name = 'u', &
                 len = nf90_unlimited, &
                 dimid = dimid(1) &
                 ), op_name = 'nf90_def_dim')
-        status = nf90_def_var(&
+        call check_error(nf90_def_var(&
                 ncid = ncid, &
                 name = 's', &
                 xtype = nf90_float, &
                 dimids = dimid, &
                 varid = varid &
-                )
+                ), op_name = 'nf90_def_var')
         ts = 0
     end subroutine observer_init
 
@@ -117,6 +83,7 @@ contains
         use netcdf
         use settings_module, only : n
         use equations, only : get_system_size
+        use netcdf_utils_module, only : check_error
         implicit none
 
         real, dimension(:), intent(in) :: s
@@ -151,11 +118,10 @@ contains
     ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subroutine observer_finalize()
         use netcdf
+        use netcdf_utils_module, only : check_error
         implicit none
 
-        integer :: status
-
-        status = nf90_close(ncid)
+        call check_error(nf90_close(ncid), op_name = 'nf90_close')
     end subroutine observer_finalize
 
 end module observer
