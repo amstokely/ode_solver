@@ -122,13 +122,16 @@ contains
         real, dimension(:), intent(in) :: s
         integer :: offset, i
         offset = size(s) / get_system_size()
-        call check_error(nf90_put_var(&
-                ncid = ncid, &
-                varid = varid, &
-                values = s(1:offset), &
-                start = [ts * offset + (i - 1) * n * offset + 1], &
-                count = [offset] &
-                ))
+        do i = 1, get_system_size()
+            call check_error(nf90_put_var(&
+                    ncid = ncid, &
+                    varid = varid, &
+                    values = s(1:offset), &
+                    start = [ts * offset + (i - 1) * n * offset + 1], &
+                    count = [offset] &
+                    ))
+
+        end do
         ts = ts + 1
     end subroutine observer_write
 

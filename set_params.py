@@ -36,4 +36,3 @@ ic_dim = ds.createDimension('ic_dim', 3 * nx * ny)
 nc_ic = ds.createVariable('ic', 'f4', ('ic_dim',))
 nc_ic[:] = ic
 ds.close()
-ds = nc.Dataset('output.nc', 'w', format='NETCDF4')

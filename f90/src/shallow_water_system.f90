@@ -91,19 +91,15 @@ contains
         real, intent(in) :: t
         real, dimension(:), target, intent(in) :: s
         real, dimension(size(s)), target :: y
-        real, dimension(:), pointer :: s_ptr
-        real, dimension(:), pointer :: y_ptr
         real, pointer, dimension(:, :) :: s_u, s_v, s_h
         real, pointer, dimension(:, :) :: y_u, y_v, y_h
         integer :: i, j, i_m1, i_p1, j_m1, j_p1
-        s_ptr => s
-        y_ptr => y
-        call c_f_pointer(c_loc(s_ptr(1)), s_u, [nx, ny])
-        call c_f_pointer(c_loc(s_ptr(nx * ny + 1)), s_v, [nx, ny])
-        call c_f_pointer(c_loc(s_ptr(2 * nx * ny + 1)), s_h, [nx, ny])
-        call c_f_pointer(c_loc(y_ptr(1)), y_u, [nx, ny])
-        call c_f_pointer(c_loc(y_ptr(nx * ny + 1)), y_v, [nx, ny])
-        call c_f_pointer(c_loc(y_ptr(2 * nx * ny + 1)), y_h, [nx, ny])
+        s_u(1:nx, 1:ny) => s(1:nx * ny)
+        s_v(1:nx, 1:ny) => s(nx * ny + 1:2 * nx * ny)
+        s_h(1:nx, 1:ny) => s(2 * nx * ny + 1:3 * nx * ny)
+        y_u(1:nx, 1:ny) => y(1:nx * ny)
+        y_v(1:nx, 1:ny) => y(nx * ny + 1:2 * nx * ny)
+        y_h(1:nx, 1:ny) => y(2 * nx * ny + 1:3 * nx * ny)
         do i = 1, nx
             if (i == 1) then
                 i_m1 = nx
@@ -138,11 +134,6 @@ contains
                         - s_h(i, j) * ((s_v(i, j_p1) - s_v(i, j_m1)) / (2 * dy))
             end do
         end do
-        print *, "-----------------------------------"
-        print *, "t = ", t
-        print *, s_u(133, 133), s_v(133, 133), s_h(133, 133)
-        print *, y_u(133, 133), y_v(133, 133), y_h(133, 133)
-        print *, "-----------------------------------"
     end function shallow_water_system
 
 end module shallow_water_system_module
