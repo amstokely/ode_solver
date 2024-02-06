@@ -7,21 +7,10 @@ module lorenz_system_module
 
 contains
 
-    real function get_real_variable(ncid, name)
-        use netcdf
-        implicit none
-        integer, intent(in) :: ncid
-        character(len = *), intent(in) :: name
-        integer :: varid, status
-        real :: value
-        status = nf90_inq_varid(ncid, name, varid)
-        status = nf90_get_var(ncid, varid, value)
-        get_real_variable = value
-    end function get_real_variable
-
     subroutine lorenz_init()
         use netcdf
         use settings_module, only : params
+        use netcdf_utils_module, only : get_real_variable
         implicit none
         integer :: ncid, status
         status = nf90_open(&

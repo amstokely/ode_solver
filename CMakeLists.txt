@@ -24,12 +24,16 @@ FILE(GLOB_RECURSE netcdff_libs
 ADD_LIBRARY(ode_solver
             ${CMAKE_SOURCE_DIR}/f90/src/equations.f90
             ${CMAKE_SOURCE_DIR}/f90/src/integrator.f90
+            ${CMAKE_SOURCE_DIR}/f90/src/euler_integrator.f90
+            ${CMAKE_SOURCE_DIR}/f90/src/rk_integrator.f90
             ${CMAKE_SOURCE_DIR}/f90/src/observer.f90
             ${CMAKE_SOURCE_DIR}/f90/src/system.f90
             ${CMAKE_SOURCE_DIR}/f90/src/lorenz_system.f90
             ${CMAKE_SOURCE_DIR}/f90/src/solver.f90
             ${CMAKE_SOURCE_DIR}/f90/src/settings.f90
             ${CMAKE_SOURCE_DIR}/f90/src/shallow_water_system.f90
+            ${CMAKE_SOURCE_DIR}/f90/src/netcdf_utils.f90
+
             )
 TARGET_LINK_LIBRARIES(ode_solver ${netcdff_libs})
 SET_TARGET_PROPERTIES(

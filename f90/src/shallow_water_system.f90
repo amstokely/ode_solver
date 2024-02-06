@@ -9,55 +9,10 @@ module shallow_water_system_module
     real, allocatable, dimension(:), target :: ic
 
 contains
-    integer function get_integer_variable(ncid, name)
-        use netcdf
-        implicit none
-        integer, intent(in) :: ncid
-        character(len = *), intent(in) :: name
-        integer :: varid, status
-        integer :: value
-        status = nf90_inq_varid(ncid, name, varid)
-        status = nf90_get_var(ncid, varid, value)
-        get_integer_variable = value
-    end function get_integer_variable
-
-    real function get_real_variable(ncid, name)
-        use netcdf
-        implicit none
-        integer, intent(in) :: ncid
-        character(len = *), intent(in) :: name
-        integer :: varid, status
-        real :: value
-        status = nf90_inq_varid(ncid, name, varid)
-        status = nf90_get_var(ncid, varid, value)
-        get_real_variable = value
-    end function get_real_variable
-
-    function get_real_array_variable(ncid, name) result(value)
-        use netcdf
-        implicit none
-        integer, intent(in) :: ncid
-        character(len = *), intent(in) :: name
-        integer :: varid, status, dimid, len
-        integer :: dimids(1)
-        real, allocatable, dimension(:) :: value
-        status = nf90_inq_varid(ncid, name, varid)
-        status = nf90_inquire_variable(&
-                ncid = ncid, &
-                varid = varid, &
-                dimids = dimids &
-                )
-        status = nf90_inquire_dimension(&
-                ncid = ncid, &
-                dimid = dimids(1), &
-                len = len &
-                )
-        allocate(value(len))
-        status = nf90_get_var(ncid, varid, value)
-    end function get_real_array_variable
 
     subroutine shallow_water_init()
         use netcdf
+        use netcdf_utils_module, only : get_integer_variable, get_real_variable, get_real_array_variable
         use iso_c_binding, only : c_f_pointer, c_loc
         use settings_module, only : params
         implicit none
