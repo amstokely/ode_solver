@@ -3,12 +3,19 @@ PROJECT(ode_solver)
 
 SET(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
+SET(NetCDF_Fortran_LIBRARIES CACHE PATH "")
+SET(NetCDF_Fortran_INCLUDE_DIR CACHE PATH "")
+
 ENABLE_LANGUAGE(Fortran)
+message(STATUS ${NetCDF_Fortran_LIBRARIES})
+if(NetCDF_Fortran_LIBRARIES STREQUAL "")
+    FIND_PACKAGE(NetCDF REQUIRED COMPONENTS Fortran)
+endif()
 
-FIND_PACKAGE(netCDF REQUIRED)
 
-SET(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath -Wl,${netCDF_LIB_DIR}")
+INCLUDE_DIRECTORIES(${NetCDF_Fortran_INCLUDE_DIR})
 
 SET(OUTPUT_DIR CACHE PATH "")
 IF (OUTPUT_DIR STREQUAL "")
@@ -17,10 +24,6 @@ ENDIF ()
 IF (NOT EXISTS ${OUTPUT_DIR})
     FILE(MAKE_DIRECTORY ${OUTPUT_DIR})
 ENDIF ()
-
-INCLUDE_DIRECTORIES(${netCDF_INCLUDE_DIR})
-
-set(CMAKE_Fortran_FLAGS "-L${netCDF_LIB_DIR} -lnetcdff")
 
 ADD_LIBRARY(ode_solver
             ${CMAKE_SOURCE_DIR}/src/equations.f90
@@ -35,6 +38,7 @@ ADD_LIBRARY(ode_solver
             ${CMAKE_SOURCE_DIR}/src/shallow_water_system.f90
             ${CMAKE_SOURCE_DIR}/src/netcdf_utils.f90
             )
+TARGET_LINK_LIBRARIES(ode_solver ${NetCDF_Fortran_LIBRARIES})
 SET_TARGET_PROPERTIES(
         ode_solver
         PROPERTIES
