@@ -9,7 +9,6 @@ SET(NetCDF_Fortran_LIBRARIES CACHE PATH "")
 SET(NetCDF_Fortran_INCLUDE_DIR CACHE PATH "")
 
 ENABLE_LANGUAGE(Fortran)
-message(STATUS ${NetCDF_Fortran_LIBRARIES})
 if(NetCDF_Fortran_LIBRARIES STREQUAL "")
     FIND_PACKAGE(NetCDF REQUIRED COMPONENTS Fortran)
 endif()
@@ -48,16 +47,8 @@ SET_TARGET_PROPERTIES(
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 ADD_EXECUTABLE(
-        lorenz
+       solver
         ${CMAKE_SOURCE_DIR}/src/mains/ode_solver.f90
         )
-TARGET_LINK_LIBRARIES(lorenz ode_solver)
-ADD_CUSTOM_TARGET(
-        configure_namelist
-        COMMAND sed -i -e 's|OUTPUT_DIR|'${OUTPUT_DIR}'|g' ${CMAKE_SOURCE_DIR}/ode_solver.cfg
-        )
-ADD_CUSTOM_TARGET(
-        restore_namelist
-        COMMAND sed -i -e 's|'${OUTPUT_DIR}'|OUTPUT_DIR|g' ${CMAKE_SOURCE_DIR}/ode_solver.cfg
-        )
+TARGET_LINK_LIBRARIES(solver ode_solver)
 
