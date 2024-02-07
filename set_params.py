@@ -1,26 +1,44 @@
 import netCDF4 as nc
 import numpy as np
 
-Lx = 1E+4
-Ly = 1E+4
-nx = 150
-ny = 150
+
+def generate_splash_conditions(nx, ny, x0, y0, x1, y1, x2, y2, A, sigma, H0=0):
+    x = np.linspace(0, nx - 1, nx)
+    y = np.linspace(0, ny - 1, ny)
+    X, Y = np.meshgrid(x, y)
+
+    # Initial water height with a Gaussian disturbance
+    H = H0 + A * np.exp(-((X - x0) ** 2 + (Y - y0) ** 2) / (2 * sigma ** 2))
+    H = H + A * np.exp(-((X - x1) ** 2 + (Y - y1) ** 2) / (2 * sigma ** 2))
+    H = H + A * np.exp(-((X - x2) ** 2 + (Y - y2) ** 2) / (2 * sigma ** 2))
+
+    # Initial velocities (optional, for simplicity set to 0)
+    U = np.zeros_like(H)
+    V = np.zeros_like(H)
+
+    return H, U, V
+
+nx, ny = 400, 400  # Domain size
+x0, y0 = 50, 200  # Center of the splash
+x1, y1 = 0, 0  # Center of the splash
+x2, y2 = 300, 150  # Center of the splash
+A = 10  # Amplitude of the splash
+sigma = 20  # Width of the Gaussian disturbance
+H0 = 10  # Background water height
+
+H, U, V = generate_splash_conditions(nx, ny, x0, y0,x1,y1,x2,y2, A, sigma, H0)
+
+
+Lx = 1E+1
+Ly = 1E+1
 dx = float(Lx / (nx - 1))
 dy = float(Ly / (ny - 1))
-X = np.random.normal(
-    1, 0.4, (nx * ny,)).astype('f4'
-                                 ).reshape((nx, ny))
-Y = np.random.normal(
-    1, 0.4, (nx * ny,)).astype('f4'
-                               ).reshape((nx, ny))
-
-
+domain = np.arange(0, np.pi, np.pi / (nx * ny))
 
 ic = np.zeros(3 * nx * ny, dtype='f4')
-ic[:nx * ny] = X.flatten()
-ic[nx * ny:2 * nx * ny] = Y.flatten()
-ic[2 * nx * ny:] = np.random.rand(nx * ny).astype('f4')
-
+ic[0: nx * ny] = U.flatten()
+ic[nx * ny: 2 * nx * ny] = V.flatten()
+ic[2 * nx * ny:] = H.flatten()
 
 ds = nc.Dataset('params.nc', 'w', format='NETCDF4')
 ds.createDimension('n', 1)

@@ -90,8 +90,8 @@ contains
             end do
         end do
         print *, "t = ", t
-        print *, "s_u = ", s_u(49, 88), "s_v = ", s_v(49, 88), "s_h = ", s_h(49, 88)
-        print *, "y_u = ", y_u(49, 88), "y_v = ", y_v(49, 88), "y_h = ", y_h(49, 88)
+        print *, "s_u = ", s_u(50, 50), "s_v = ", s_v(50, 50), "s_h = ", s_h(50, 50)
+        print *, "y_u = ", y_u(50, 50), "y_v = ", y_v(50, 50), "y_h = ", y_h(50, 50)
         print *, "-----------------------------------------------------------------"
     end function shallow_water_system
 
